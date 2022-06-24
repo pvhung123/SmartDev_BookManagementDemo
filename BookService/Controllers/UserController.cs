@@ -20,7 +20,7 @@ namespace BookService.Controllers
         /// <summary>
         /// Get a list users
         /// </summary>
-        /// <response code="200">Get a list books successfully</response>                
+        /// <response code="200">Get a list users successfully</response>                
         /// <response code="500">There is an error with internal server</response>
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()

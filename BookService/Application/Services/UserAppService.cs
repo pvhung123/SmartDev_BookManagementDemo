@@ -20,9 +20,9 @@ namespace BookService.Application.Services
         {            
             try
             {
-                var books = await _userRepository.GetAllAsync();
+                var users= await _userRepository.GetAllAsync();
 
-                return books;
+                return users;
             }
             catch (Exception ex)
             {
@@ -34,9 +34,9 @@ namespace BookService.Application.Services
         {
             try
             {
-                var User = await _userRepository.GetAsync(id);
+                var user = await _userRepository.GetAsync(id);
 
-                return User;
+                return user;
             }
             catch (Exception ex)
             {
