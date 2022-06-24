@@ -1,4 +1,5 @@
 ﻿using BookService.Application.Common.Exceptions;
+using BookService.Application.Contracts;
 using BookService.Application.Domain.Models;
 using BookService.Application.Domain.Repository;
 using System;
@@ -16,6 +17,35 @@ namespace BookService.Application.Services
             _bookRepository = bookRepository;
         }
 
+        public async Task<Book> CreateAsync(CreateBookDto createBookDto)
+        {
+            if (createBookDto == null)
+                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_NULL);
+
+            try
+            {
+                var isExisting = await _bookRepository.IsBookExistingAsync(createBookDto.Title);
+                    
+
+                if (isExisting)
+                    throw new Exception(ExceptionMessage.EX_1002_BOOK_EXISTED);
+
+                Book book = new Book
+                {
+                    Title = createBookDto.Title,
+                    Author = createBookDto.Author,
+                    Description = createBookDto.Description
+                };
+
+                var result = await _bookRepository.InsertAsync(book);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {            
@@ -27,7 +57,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
@@ -41,7 +71,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
@@ -58,7 +88,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }

@@ -28,10 +28,12 @@ namespace BookService
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));            
-            services.AddTransient<IBookRepository, BookRepository>();            
+            services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IUserBookRepository, UserBookRepository>();
 
             services.AddTransient<IBookAppService, BookAppService>();
+            services.AddTransient<IUserAppService, UserAppService>();
             services.AddTransient<IUserBookAppService, UserBookAppService>();
         }
 

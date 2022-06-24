@@ -45,7 +45,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
@@ -59,7 +59,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
@@ -73,7 +73,7 @@ namespace BookService.Application.Services
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }        
     }

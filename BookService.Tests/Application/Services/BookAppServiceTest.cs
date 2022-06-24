@@ -1,4 +1,5 @@
-﻿using BookService.Application.Domain.Models;
+﻿using BookService.Application.Contracts;
+using BookService.Application.Domain.Models;
 using BookService.Application.Domain.Repository;
 using BookService.Application.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,6 +24,51 @@ namespace BookService.Tests.Application.Services
         }
 
         [TestMethod]
+        public async Task CreateAsync_WhenNullArgument_ThrowArgumentNullException()
+        {
+            //Arrange
+            var exception = new ArgumentNullException("Throw_Exception");
+
+            //Mock
+            _mockBookRepository.Setup(x => x.InsertAsync(null))
+               .ThrowsAsync(exception);
+
+            //Assert
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _bookAppService.CreateAsync(null));
+        }
+
+        [TestMethod]
+        public async Task CreateAsync_WhenBookExisted_ThrowException()
+        {
+            //Arrange
+            var createBookDto = Mock.Of<CreateBookDto>(x => x.Title == "title");
+            var exception = new Exception("This book already existed.");
+
+            //Mock
+            _mockBookRepository.Setup(x => x.IsBookExistingAsync(createBookDto.Title)).ReturnsAsync(true);
+
+            //Assert
+            await Assert.ThrowsExceptionAsync<Exception>(() => _bookAppService.CreateAsync(createBookDto));
+        }
+
+        [TestMethod]
+        public async Task CreateAsync_WhenValidArgument_ReturnOkResult()
+        {
+            //Arrange
+            var createBookDto = Mock.Of<CreateBookDto>(x => x.Title == "Title");
+
+            var book = Mock.Of<Book>(x => x.Title == "Title");
+
+            //Mock
+            _mockBookRepository.Setup(x => x.InsertAsync(It.IsAny<Book>())).ReturnsAsync(book);
+            var actionResult = await _bookAppService.CreateAsync(createBookDto);
+
+            //Assert
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(createBookDto.Title, actionResult.Title);
+        }
+
+        [TestMethod]
         public async Task GetAllAsync_ThrowException()
         {
             //Mock
@@ -33,34 +79,6 @@ namespace BookService.Tests.Application.Services
 
         [TestMethod]
         public async Task GetAllAsync_WhenValidArgument_ReturnOkResult()
-        {
-            //Arrange
-            int id = 1;
-            var book = Mock.Of<Book>(x => x.Title == "Title");
-
-            //Mock
-            _mockBookRepository.Setup(x => x.GetAsync(id)).ReturnsAsync(book);
-            var actionResult = await _bookAppService.GetAsync(id);
-
-            //Assert
-            Assert.IsNotNull(actionResult);
-            Assert.AreEqual(actionResult.Title, book.Title);
-        }
-
-        [TestMethod]
-        public async Task GetAsync_ThrowException()
-        {
-            //Arrange
-            int id = 1;
-
-            //Mock
-            _mockBookRepository.Setup(x => x.GetAsync(id)).ThrowsAsync(new Exception());
-
-            await Assert.ThrowsExceptionAsync<Exception>(() => _bookAppService.GetAsync(id));
-        }
-
-        [TestMethod]
-        public async Task GetAsync_WhenValidArgument_ReturnOkResult()
         {
             //Arrange
             var books = new List<Book>
@@ -79,6 +97,34 @@ namespace BookService.Tests.Application.Services
             //Assert
             Assert.IsNotNull(actionResult);
         }
+
+        [TestMethod]
+        public async Task GetAsync_ThrowException()
+        {
+            //Arrange
+            int id = 1;
+
+            //Mock
+            _mockBookRepository.Setup(x => x.GetAsync(id)).ThrowsAsync(new Exception());
+
+            await Assert.ThrowsExceptionAsync<Exception>(() => _bookAppService.GetAsync(id));
+        }
+
+        [TestMethod]
+        public async Task GetAsync_WhenValidArgument_ReturnOkResult()
+        {
+            //Arrange
+            int id = 1;
+            var book = Mock.Of<Book>(x => x.Title == "Title");
+
+            //Mock
+            _mockBookRepository.Setup(x => x.GetAsync(id)).ReturnsAsync(book);
+            var actionResult = await _bookAppService.GetAsync(id);
+
+            //Assert
+            Assert.IsNotNull(actionResult);
+            Assert.AreEqual(actionResult.Title, book.Title);
+        }        
 
         [TestMethod]
         public async Task SearchBooksAsync_WhenNullArgument_ThrowArgumentNullException()

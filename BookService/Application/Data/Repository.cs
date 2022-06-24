@@ -33,6 +33,8 @@ namespace BookService.Application.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+            entity.CreatedDate = DateTime.Now;
+
             await DbSet.AddAsync(entity);
             await _dbContext.SaveChangesAsync();
 
@@ -43,6 +45,8 @@ namespace BookService.Application.Data
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
+
+            entity.ModifiedDate = DateTime.Now;
 
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
