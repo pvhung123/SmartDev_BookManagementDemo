@@ -15,7 +15,6 @@ namespace BookService.Application.Services
             _userRepository = userRepository;
         }
 
-
         public async Task<IEnumerable<User>> GetAllAsync()
         {            
             try

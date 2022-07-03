@@ -26,7 +26,7 @@ namespace BookService.Controllers
         /// <response code="400">Data model invalid</response>
         /// <response code="500">There is an error with internal server</response>
         [HttpPost]
-        public async Task<IActionResult> AddUserBookAsync(CreateUserBookDto input)
+        public async Task<IActionResult> AddUserBookAsync(UserBookDto input)
         {
             if (input == null)
             {

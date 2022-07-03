@@ -39,37 +39,78 @@ namespace BookService.Tests.Application.Services
         }
 
         [TestMethod]
+        public async Task AddUserBookAsync_WhenBooksNull_ThrowArgumentNullException()
+        {
+            //Arrange
+            var exception = new ArgumentNullException("Throw_Exception");
+            var userBookDto = new UserBookDto();
+
+            //Mock
+            _mockUserBookRepository.Setup(x => x.InsertAsync(It.IsAny<UserBook>()))
+               .ThrowsAsync(exception);
+
+            //Assert
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => _userBookAppService.AddUserBookAsync(userBookDto));
+        }
+
+        [TestMethod]
         public async Task AddUserBookAsync_WhenBookExisted_ThrowException()
         {
             //Arrange
-            var createUserBookDto = Mock.Of<CreateUserBookDto>(
-               x => x.UserId == 1 && x.BookId == 1);
+            var bookId = 1;
+            var userBookDto = new UserBookDto
+            {
+                UserId = 1,
+                Books = new List<BookDto>()
+                {
+                    new BookDto
+                    {
+                        Id = bookId,
+                        Title = "Test",
+                        ReadingStatus = ReadingStatus.Completed
+                    }
+                }
+            };
+
+
             var exception = new Exception("This book already existed.");
 
             //Mock
-            _mockUserBookRepository.Setup(x => x.IsUserBookExistingAsync(createUserBookDto.UserId, createUserBookDto.BookId)).ReturnsAsync(true);
+            _mockUserBookRepository.Setup(x => x.IsUserBookExistingAsync(userBookDto.UserId, bookId)).ReturnsAsync(true);
 
             //Assert
-            await Assert.ThrowsExceptionAsync<Exception>(() => _userBookAppService.AddUserBookAsync(createUserBookDto));
+            await Assert.ThrowsExceptionAsync<Exception>(() => _userBookAppService.AddUserBookAsync(userBookDto));
         }
 
         [TestMethod]
         public async Task AddUserBookAsync_WhenValidArgument_ReturnOkResult()
         {
             //Arrange
-            var createUserBookDto = Mock.Of<CreateUserBookDto>(
-                x => x.UserId == 1 && x.BookId == 1);
-            
+            var bookId = 1;
+            var userBookDto = new UserBookDto
+            {
+                UserId = 1,
+                Books = new List<BookDto>()
+                {
+                    new BookDto
+                    {
+                        Id = bookId,
+                        Title = "Test",
+                        ReadingStatus = ReadingStatus.Completed
+                    }
+                }
+            };
+
             var userBook = Mock.Of<UserBook>(x => x.UserId == 1 && x.BookId == 1);
 
             //Mock
             _mockUserBookRepository.Setup(x => x.InsertAsync(It.IsAny<UserBook>())).ReturnsAsync(userBook);
-            var actionResult = await _userBookAppService.AddUserBookAsync(createUserBookDto);
+            var actionResult = await _userBookAppService.AddUserBookAsync(userBookDto);
 
             //Assert
             Assert.IsNotNull(actionResult);
-            Assert.AreEqual(createUserBookDto.UserId, actionResult.UserId);
-            Assert.AreEqual(createUserBookDto.BookId, actionResult.BookId);
+            Assert.AreEqual(userBookDto.UserId, actionResult.UserId);
+            Assert.AreEqual(userBookDto.Books[0].Id, actionResult.BookId);
         }
 
         [TestMethod]
@@ -77,7 +118,20 @@ namespace BookService.Tests.Application.Services
         {
             //Arrange
             var exception = new Exception("Throw_Exception");
-            var input = new CreateUserBookDto();
+            //Arrange
+            var input = new UserBookDto
+            {
+                UserId = 1,
+                Books = new List<BookDto>()
+                {
+                    new BookDto
+                    {
+                        Id = 1,
+                        Title = "Test",
+                        ReadingStatus = ReadingStatus.Completed
+                    }
+                }
+            };
 
             //Mock
             _mockUserBookRepository.Setup(x => x.InsertAsync(It.IsAny<UserBook>()))

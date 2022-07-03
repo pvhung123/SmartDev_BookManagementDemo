@@ -1,4 +1,5 @@
-﻿using BookService.Application.Contracts;
+﻿using BookService.Application.Common.Enum;
+using BookService.Application.Contracts;
 using BookService.Application.Domain.Models;
 using BookService.Application.Services;
 using BookService.Controllers;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -27,14 +29,26 @@ namespace BookService.Tests.Controllers
         public async Task AddUserBookAsync_WhenValidArgument_ReturnOkResult()
         {
             //Arrange
-            var createUserBookDto = Mock.Of<CreateUserBookDto>(
-                x => x.UserId == 1 && x.BookId == 1);
+            var bookId = 1;
+            var userBookDto = new UserBookDto
+            {
+                UserId = 1,
+                Books = new List<BookDto>()
+                {
+                    new BookDto
+                    {
+                        Id = bookId,
+                        Title = "Test",
+                        ReadingStatus = ReadingStatus.Completed
+                    }
+                }
+            };
 
             var userBook = Mock.Of<UserBook>(x => x.UserId == 1 && x.BookId == 1);
 
             //Mock
-            _mockUserBookAppService.Setup(x => x.AddUserBookAsync(It.IsAny<CreateUserBookDto>())).ReturnsAsync(userBook);
-            var actionResult = await _userBookController.AddUserBookAsync(createUserBookDto);
+            _mockUserBookAppService.Setup(x => x.AddUserBookAsync(It.IsAny<UserBookDto>())).ReturnsAsync(userBook);
+            var actionResult = await _userBookController.AddUserBookAsync(userBookDto);
 
             //Assert
             Assert.IsNotNull(actionResult);

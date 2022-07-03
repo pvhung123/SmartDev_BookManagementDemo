@@ -7,7 +7,7 @@ namespace BookService.Application.Services
 {
     public interface IUserBookAppService
     {
-        Task<UserBook> AddUserBookAsync(CreateUserBookDto createUserBookDto);
+        Task<UserBook> AddUserBookAsync(UserBookDto createUserBookDto);
 
         Task<List<UserBook>> GetBooksByUserIdAsync(int userId);
 

@@ -18,28 +18,34 @@ namespace BookService.Application.Services
             _userBookRepository = userBookRepository;
         }
 
-        public async Task<UserBook> AddUserBookAsync(CreateUserBookDto createUserBookDto)
+        public async Task<UserBook> AddUserBookAsync(UserBookDto userBookDto)
         {
-            if (createUserBookDto == null)
-                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_NULL);
-            
+            if (userBookDto == null)
+                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_IS_NULL);
+
+            if (userBookDto.Books == null)
+                throw new ArgumentNullException(ExceptionCode.EX_1002_BOOKS_IS_NULL, ExceptionMessage.EX_1002_BOOKS_IS_NULL);
+
             try
             {
-                var isExisting = await _userBookRepository.IsUserBookExistingAsync(
-                    createUserBookDto.BookId,
-                    createUserBookDto.UserId);
+                UserBook result = null;
 
-                if (isExisting) 
-                    throw new Exception(ExceptionMessage.EX_1002_BOOK_EXISTED);
-
-                UserBook userBook = new UserBook
+                foreach (var book in userBookDto.Books)
                 {
-                    UserId = createUserBookDto.UserId,
-                    BookId = createUserBookDto.BookId,
-                    ReadingStatus = (int)ReadingStatus.Open
-                };
+                    var isExisting = await _userBookRepository.IsUserBookExistingAsync(book.Id, userBookDto.UserId);
 
-                var result = await _userBookRepository.InsertAsync(userBook);
+                    if (isExisting)
+                        throw new Exception(ExceptionMessage.EX_1002_BOOK_EXISTED);
+
+                    UserBook userBook = new UserBook
+                    {
+                        UserId = userBookDto.UserId,
+                        BookId = book.Id,
+                        ReadingStatus = (int)ReadingStatus.Open
+                    };
+
+                    result = await _userBookRepository.InsertAsync(userBook);
+                }
 
                 return result;
             }
@@ -75,6 +81,6 @@ namespace BookService.Application.Services
             {
                 throw ex;
             }
-        }        
+        }    
     }
 }

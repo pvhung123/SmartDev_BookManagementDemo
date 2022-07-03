@@ -20,7 +20,7 @@ namespace BookService.Application.Services
         public async Task<Book> CreateAsync(CreateBookDto createBookDto)
         {
             if (createBookDto == null)
-                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_NULL);
+                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_IS_NULL);
 
             try
             {
@@ -78,7 +78,7 @@ namespace BookService.Application.Services
         public async Task<List<Book>> SearchBooksAsync(string title)
         {
             if (title == null)
-                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_NULL);
+                throw new ArgumentNullException(ExceptionCode.EX_1001_OBJECT_NULL, ExceptionMessage.EX_1001_OBJECT_IS_NULL);
 
             try
             {
